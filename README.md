@@ -1,3 +1,3 @@
 # GCP-YAMLfile
 
-this is a YAMl format filr for GCp to create workflows 
+This is a YAMl format file for GCp to create workflow.
