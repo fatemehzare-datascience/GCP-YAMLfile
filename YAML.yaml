@@ -1,0 +1,42 @@
+
+- init:
+    assign:
+      - project_id: ${sys.get_env("970335882374")}
+      - dataset_id: "churn"
+      - table_id: "trips"
+      - query: "SELECT a.*,
+  b.* EXCEPT (Customer_ID),
+  c.* EXCEPT (Customer_ID)
+FROM
+  `data.churn.wls_churn_master_target_t1` AS a
+JOIN
+  `data.churn.wls_customer_demographics_t1` AS b
+ON
+  a.Customer_ID =b.Customer_ID
+JOIN
+  `data.churn.wls_billing` AS c
+ON
+  a.Customer_ID =c.Customer_ID;"
+                      
+- delete_table_from_dataset:
+    call: googleapis.bigquery.v2.tables.delete
+    args:
+      projectId: ${970335882374}
+      datasetId: ${dataset_id}
+      tableId: ${table_id}
+- insert_table_into_dataset:
+    call: googleapis.bigquery.v2.jobs.insert
+    args:
+      projectId: ${970335882374}
+      body:
+        configuration:
+          query:
+            query: ${query}
+            destinationTable:
+              projectId: ${970335882374}
+              dataset_id: "churn"
+              table_id: "trip2"
+            allowLargeResults: true
+            useLegacySql: false
+- the_end:
+    return: "SUCCESS"
